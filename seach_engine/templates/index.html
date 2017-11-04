@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head lang="ja">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <title>Qiita 検索</title>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Qiita 検索</h1>
+
+        <form method="post" action="{{url_for('index')}}">
+            <div class="row">
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" name="keyword" placeholder="キーワード">
+                </div>
+                <div class="col-xs-2">
+                    <input type="submit" class="btn btn-md btn-block btn-primary" value="検索">
+                </div>
+            </div>
+        </form>
+
+        <br>
+
+        {% if keyword %}
+        <h3>「{{keyword}}」の検索結果(いいね!の多い順)</h3>
+        <ul>
+            {% for url in query | sort(attribute='favo', reverse=True) %}
+            <li><a href="{{url.url}}" target="_blank">{{url.title}}</a></li>
+            {% else %}
+            <p>そのキーワードを持つページはありませんでした．</p>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p></p>
+        {% endif %}
+    </div><!-- container -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>
