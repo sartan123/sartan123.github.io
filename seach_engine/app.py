@@ -23,4 +23,4 @@ def index():
 
 if __name__ == '__main__':
     app.debug = True  # デバッグモード有効化
-    app.run(host='0.0.0.0')  # どこからでもアクセス可能に
+    app.run(host='https://sartan123.github.io/seach_engine/templates/index.html')  # どこからでもアクセス可能に
