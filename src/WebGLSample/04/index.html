@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sphere</title>
+        <script src="script.js"></script>
+        <script src="minMatrix.js"></script>
+        <script id="vs" type="x-shader/x-vertex">
+            attribute vec3 position;
+            attribute vec4 color;
+            attribute vec3 normal;
+            uniform mat4 mvpMatrix;
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            void main(){
+                gl_Position = mvpMatrix * vec4(position, 1.0);
+                vColor = color;
+                vNormal = normal;
+            }
+        </script>
+        <script id="fs" type="x-shader/x-fragment">
+            precision mediump float;
+            uniform vec3 LightDir;
+            uniform vec3 EyePosition;
+            uniform vec3 EyePoint;
+            uniform mat4 invMatrix;
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            void main(){
+                vec3 eyeDirection = EyePosition - EyePoint;
+                vec3 invEye = normalize(invMatrix * vec4(eyeDirection, 1.0)).xyz;
+                vec3 invLight = (invMatrix * vec4(LightDir, 1.0)).xyz;
+                vec3 halfVector = normalize(invLight + invEye);
+
+                float NV = dot(vNormal, invEye);
+                float NH = dot(vNormal, halfVector);
+                float VH = dot(invEye, halfVector);
+                float NL = dot(vNormal, invLight);
+                float LH = dot(invLight, halfVector);
+
+                float m = 0.35;
+                float NH2 = NH * NH;
+                float D = exp(-(1.0-NH2)/(NH2*m*m)) / (4.0*m*m*NH2*NH2);
+
+                float G = min(1.0, min(2.0*NH*NV / VH, 2.0*NH*NL / VH));
+
+                float n = 20.0;
+                float g = sqrt(n*n + LH*LH - 1.0);
+                float gpc = g + LH;
+                float gnc = g - LH;
+                float cgpc = LH*gpc - 1.0;
+                float cgnc = LH*gnc - 1.0;
+                float F = 0.5 * gnc * gnc * (1.0 + cgpc * cgpc / (cgpc * cgpc)) / (gpc * gpc);
+
+                vec4 ks = vec4(0.972, 0.866, 0.37, 1.0) * max(0.0, F * D * G / NV);
+             
+                float diff = clamp(dot(normalize(invLight), vNormal), 0.1, 1.0);
+                //float diff2 = pow(clamp(dot(halfVector, vNormal), 0.0, 1.0), 20.0);
+                gl_FragColor = vec4(vColor.rgb * diff, vColor.a) + ks;
+            }
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
