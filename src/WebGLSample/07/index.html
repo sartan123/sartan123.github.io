@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Raytracing Sample1</title>
+        <script src="script.js"></script>
+        <script src="minMatrix.js"></script>
+        <script id="vs" type="x-shader/x-vertex">
+            attribute vec3 position;
+            attribute vec4 color;
+            attribute vec3 normal;
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            void main(){
+                gl_Position = vec4(position, 1.0);
+                vColor = color;
+                vNormal = normal;
+            }
+        </script>
+        <script id="fs" type="x-shader/x-fragment">
+            precision mediump float;
+            uniform vec2 Resolution;
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            
+            struct Ray{
+                vec3 origin;
+                vec3 direction;
+            };
+            struct Shpere{
+                vec3 center;
+                vec3 color;
+                float radian;
+            };
+            bool Hit(Ray r, Shpere s){
+                vec3 a = r.origin - s.center;
+                float B = dot(a, r.direction);
+                float C = dot(a, a) - s.radian * s.radian;
+
+                float res = B * B - C;
+                if(res > 0.0){
+                    float t = -B -sqrt(res);
+                    return (t > 0.0);
+                }
+                return false;
+            }
+            void main(){
+                vec2 p = (gl_FragCoord.xy * 2.0 - Resolution) / min(Resolution.x, Resolution.y);
+
+                Ray ray;
+                ray.origin = vec3(0.0, 0.0, 5.0);
+                ray.direction = normalize(vec3(p.x, p.y, -1.0));
+
+                Shpere S;
+                S.center = vec3(0.0, 0.0, 0.0);
+                S.color = vec3(0.3, 0.5, 0.7);
+                S.radian = 0.5;
+
+                if(Hit(ray, S)){
+                    gl_FragColor = vec4(S.color, 1.0);
+                }
+                else{
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+                
+            }
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
