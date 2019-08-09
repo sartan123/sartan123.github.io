@@ -497,3 +497,29 @@ function hsva(h, s, v, a){
 	}
 	return color;
 }
+
+function square(){
+	var position = [
+		-1.0,  1.0,  0.0,
+		 1.0,  1.0,  0.0,
+		-1.0, -1.0,  0.0,
+		 1.0, -1.0,  0.0
+	];
+	var normal = [
+		0.0, 1.0, 0.0,
+		0.0, 1.0, 0.0,
+		0.0, 1.0, 0.0,
+		0.0, 1.0, 0.0
+	];
+	var color = [
+		1.0, 0.0, 0.0, 1.0,
+		0.0, 1.0, 0.0, 1.0,
+		0.0, 0.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0
+	];
+	var index = [
+		0, 2, 1,
+		1, 2, 3
+	];
+	return {p : position, n : normal, c : color, i : index};
+}
